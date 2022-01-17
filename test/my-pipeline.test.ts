@@ -6,7 +6,7 @@ test('Snapshot test', () => {
   const app = new cdk.App()
   const stack = new MyPipeline.MyPipelineStack(app, 'MyPipelineStack', {
     env: {
-      account: app.node.tryGetContext('account'),
+      account: '111111111111',
       region: 'eu-west-1',
     }
   })
