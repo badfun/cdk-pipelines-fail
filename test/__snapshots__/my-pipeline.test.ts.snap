@@ -127,6 +127,84 @@ Object {
             ],
             "Name": "UpdatePipeline",
           },
+          Object {
+            "Actions": Array [
+              Object {
+                "ActionTypeId": Object {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1",
+                },
+                "Configuration": Object {
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+                  "ChangeSetName": "PipelineChange",
+                  "RoleArn": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "arn:",
+                        Object {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":iam::111111111111:role/cdk-hnb659fds-cfn-exec-role-111111111111-eu-west-1",
+                      ],
+                    ],
+                  },
+                  "StackName": "test-LambdaStack",
+                  "TemplatePath": "Synth_Output::assembly-MyPipelineStack-test/MyPipelineStacktestLambdaStack6ACFAD43.template.json",
+                },
+                "InputArtifacts": Array [
+                  Object {
+                    "Name": "Synth_Output",
+                  },
+                ],
+                "Name": "Prepare",
+                "RoleArn": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::111111111111:role/cdk-hnb659fds-deploy-role-111111111111-eu-west-1",
+                    ],
+                  ],
+                },
+                "RunOrder": 1,
+              },
+              Object {
+                "ActionTypeId": Object {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1",
+                },
+                "Configuration": Object {
+                  "ActionMode": "CHANGE_SET_EXECUTE",
+                  "ChangeSetName": "PipelineChange",
+                  "StackName": "test-LambdaStack",
+                },
+                "Name": "Deploy",
+                "RoleArn": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::111111111111:role/cdk-hnb659fds-deploy-role-111111111111-eu-west-1",
+                    ],
+                  ],
+                },
+                "RunOrder": 2,
+              },
+            ],
+            "Name": "test",
+          },
         ],
       },
       "Type": "AWS::CodePipeline::Pipeline",
@@ -170,6 +248,50 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::111111111111:role/cdk-hnb659fds-deploy-role-111111111111-eu-west-1",
+                    ],
+                  ],
+                },
               },
               "Resource": Array [
                 Object {
@@ -281,15 +403,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:eu-west-1:111111111111:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6",
                       },
@@ -304,15 +418,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:eu-west-1:111111111111:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6",
                       },
@@ -339,15 +445,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":codebuild:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":report-group/",
+                    ":codebuild:eu-west-1:111111111111:report-group/",
                     Object {
                       "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6",
                     },
@@ -417,11 +515,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
+                      ":iam::111111111111:root",
                     ],
                   ],
                 },
@@ -537,6 +631,22 @@ Object {
                 ],
               },
             },
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":iam::111111111111:role/cdk-hnb659fds-deploy-role-111111111111-eu-west-1",
+                  ],
+                ],
+              },
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -586,11 +696,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
+                      ":iam::111111111111:root",
                     ],
                   ],
                 },
@@ -713,15 +819,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:eu-west-1:111111111111:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
                       },
@@ -736,15 +834,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:eu-west-1:111111111111:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
                       },
@@ -771,15 +861,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":codebuild:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":report-group/",
+                    ":codebuild:eu-west-1:111111111111:report-group/",
                     Object {
                       "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
                     },
@@ -800,18 +882,7 @@ Object {
                 },
               },
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:*:iam::",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":role/*",
-                  ],
-                ],
-              },
+              "Resource": "arn:*:iam::111111111111:role/*",
             },
             Object {
               "Action": "cloudformation:DescribeStacks",
